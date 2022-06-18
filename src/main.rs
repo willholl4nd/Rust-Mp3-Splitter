@@ -1,8 +1,8 @@
 use std::fs::{self, File};
-use std::path::PathBuf;
+//use std::path::PathBuf;
 use std::env;
-use std::io;
-use std::io::Error;
+//use std::io;
+//use std::io::Error;
 use std::io::prelude::*;
 use std::process::Command;
 
@@ -18,6 +18,7 @@ fn construct_command(input_path: String, filename: String,
     return string_command;
 }
 
+#[warn(dead_code)]
 fn print_directory_contents() {
     for i in fs::read_dir(".").unwrap() {
         println!("Files in dir: {}", i.unwrap().path().display());
