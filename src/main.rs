@@ -115,6 +115,20 @@ fn validate_files(file: String) -> String {
     }
 }
 
+fn check_input_file_existance() -> bool {
+    let mut ret: bool = false;
+    
+    let filename: String = "./input.mp3".to_string(); 
+    let paths = fs::read_dir("./").unwrap();
+    for path in paths {
+        if path.unwrap().path().to_str().unwrap() == filename {
+            ret = true;
+        }
+    }
+
+    ret
+}
+
 fn main() {
     let args: Vec<String> = env::args().collect();
     if args.len() < 3 {
@@ -124,7 +138,13 @@ fn main() {
     }
 
     let timestamp_path: String = args[1].to_string();
-    let inputmp3_path: String = args[2].to_string();
+    let mut inputmp3_path: String = args[2].to_string();
+    let input_flag: bool = check_input_file_existance();
+
+    //Replace input mp3 with default name
+    if input_flag {
+        inputmp3_path = "input.mp3".to_string();
+    }
 
     let full_inputmp3_path: String = validate_files(inputmp3_path);
     let full_timestamp_path: String = validate_files(timestamp_path);
@@ -136,7 +156,10 @@ fn main() {
     let split_contents = separate_file_contents(full_timestamp_path);
     println!("Length of new_split_contents = {}", split_contents.len());
 
-    convert_overall_file(full_inputmp3_path);
+    //No need to do overall conversion since it's already converted
+    if !input_flag { 
+        convert_overall_file(full_inputmp3_path);
+    }
 
     let full_input_path: String = validate_files("input.mp3".to_string());
     let convert_commands: Vec<String> = split_contents.iter()
