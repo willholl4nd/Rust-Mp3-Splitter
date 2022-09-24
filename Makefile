@@ -1,5 +1,5 @@
 timestamps = "timestamps.txt"
-input = "input.mp3"
+input = "input.opus"
 link = ""
 
 all:
