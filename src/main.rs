@@ -61,7 +61,7 @@ fn construct_command(input_path: &String, filename: &String,
                      beginning: &String, end: &String) -> String {
     //ffmpeg -i inputmp3 -acodec copy -ss hh:mm:ss -to hh:mm:ss newname
     let string_command: String = 
-        format_args!("ffmpeg -i {} -acodec libmp3lame -ss {} -to {} \"{}\" -y",
+        format_args!("ffmpeg -i {} -acodec libmp3lame -ss {} -to {} file:\"{}\" -y",
                      input_path, beginning, end, filename).to_string();
 
     return string_command;
@@ -94,8 +94,8 @@ fn separate_file_contents(file_path: String) -> FileContents {
             file_opened
         },
         Err(error) => {
-            println!("Error opening file: {}", error);
-            println!("File path {:?}", file_path);
+            eprintln!("Error opening file: {}", error);
+            eprintln!("File path {:?}", file_path);
             panic!()
         }
     };
@@ -192,7 +192,7 @@ fn parse_file(file_contents: String) -> FileContents {
     if has_format {
         split_contents = split_contents.split_off(1);
     }
-    println!("{:?}", split_contents);
+    //println!("{:?}", split_contents);
 
     //Checks if we have the bare minimum number of time stamps to split overall 
     //file into
@@ -246,7 +246,7 @@ fn parse_file(file_contents: String) -> FileContents {
                 .map(|x| x.to_string()).collect();
             let name: String = temp[0].clone()+".mp3";
 
-            print!("{:?} \"{}\"\n", temp, first);
+            //print!("{:?} \"{}\"\n", temp, first);
             let mut vec: Vec<String> = Vec::new();
             vec.push(first.to_string());
             vec.push(name);
@@ -266,7 +266,7 @@ fn parse_file(file_contents: String) -> FileContents {
         }
     }
 
-    println!("Final: {:?}", ret);
+    //println!("Final: {:?}", ret);
 
     FileContents { format: format_strings.clone(), data: ret }
 }
@@ -283,8 +283,8 @@ fn run_ffmpeg_commands(command: String) {
             println!("Conversion successful: \n\t{}", command);
        }, 
        code => {
-           println!("Failed to execute file conversion: Exit code {}", code);
-           println!("Failed command string: {}", command);
+           eprintln!("Failed to execute file conversion: Exit code {}", code);
+           eprintln!("Failed command string: {}", command);
            panic!();
        }
     }
@@ -328,7 +328,7 @@ fn main() {
     let args: Vec<String> = env::args().collect();
     //Check if we have the correct number of arguments
     if args.len() < 3 {
-        println!("Usage: <time stamp file> <input opus file>\n\
+        eprintln!("Usage: <time stamp file> <input opus file>\n\
         Please put files in outer directory with Makefile.");
         panic!();
     }
