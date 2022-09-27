@@ -6,17 +6,33 @@ use std::env;
 use std::io::prelude::*;
 use std::process::Command;
 
+/**
+ * Used to hold the parsing method needed
+ * NONE used for default
+ * Format used for formats other than default
+ */
 enum ParseMethod {
     NONE,
     Format((Vec<String>, bool))
 }
 
+/**
+ * Used to hold the contents of the timestamps file as well as the 
+ * format in which that file is in
+ */
 struct FileContents {
     format: Vec<String>,
     data: Vec<Vec<String>>
 }
 
 
+/**
+ * Runs all split commands after the timestamps file gets parsed
+ *
+ * Params:
+ * f - the parsed contents of the timestamps file
+ * input_path - the path to the input opus file 
+ */
 fn run_split_commands(f: FileContents, input_path: String) {
     let start_index: usize = f.format.iter().position(|x| x == "start").unwrap();
     let end_index: usize = f.format.iter().position(|x| x == "end").unwrap();
@@ -32,6 +48,15 @@ fn run_split_commands(f: FileContents, input_path: String) {
     }
 }
 
+/**
+ * Constructs the ffmpeg command for converting and trimming opus file to size
+ * 
+ * Params:
+ * input_path - the path to the opus file
+ * filename - the name of the file we want to output from ffmpeg
+ * beginning - the starting time in the opus file
+ * end - the ending time in the opus file
+ */
 fn construct_command(input_path: &String, filename: &String,
                      beginning: &String, end: &String) -> String {
     //ffmpeg -i inputmp3 -acodec copy -ss hh:mm:ss -to hh:mm:ss newname
@@ -50,6 +75,16 @@ fn print_directory_contents() {
 
 }
 
+
+/**
+ * The starting function where the timestamps.txt file is parsed
+ *
+ * Params: 
+ * file_path - the path to the timestamps file
+ *
+ * Returns:
+ * the parsed file contents 
+ */
 fn separate_file_contents(file_path: String) -> FileContents {
     let file_res = File::open(&file_path);
     
@@ -74,6 +109,17 @@ fn separate_file_contents(file_path: String) -> FileContents {
     file 
 }
 
+/**
+ * Determines the format of the file. If the file does not include the format 
+ * string as the first line in the program, it defaults to using "name start end"
+ * as the format
+ *
+ * Params:
+ * file_contents - the contents of the entire timestamps.txt file
+ *
+ * Returns:
+ * the format of the timestamps.txt file
+ */
 fn find_file_format(file_contents: &String) -> ParseMethod {
     //Split overall string by newline characters
     let split_contents: Vec<String> = 
@@ -113,6 +159,16 @@ fn find_file_format(file_contents: &String) -> ParseMethod {
     format
 }
 
+/**
+ * Given the file contents, determine the format of the contents inside the file 
+ * and parse the file according to that format.
+ *
+ * Params:
+ * file_contents - The contents of the timestamps.txt file
+ *
+ * Returns: 
+ * The contents of the file parsed correctly
+ */
 fn parse_file(file_contents: String) -> FileContents {
     //The format the timestamps file is in
     let mut format: ParseMethod = find_file_format(&file_contents);
