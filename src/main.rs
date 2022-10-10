@@ -1,10 +1,37 @@
-use std::fs::{self, File};
-//use std::path::PathBuf;
-use std::env;
-//use std::io;
 //use std::io::Error;
+//use std::io;
+//use std::path::PathBuf;
+use clap::Parser;
+use std::env;
+use std::fs::{self, File};
 use std::io::prelude::*;
 use std::process::Command;
+#[derive(Parser, Debug)]
+#[command(author, version, about, long_about = None)]
+struct Args {
+    #[command(subcommand)]
+    action: Action
+}
+
+#[derive(clap::Subcommand, Debug)]
+enum Action {
+    Download {
+
+        //Youtube link to download
+        #[arg(short, long)]
+        link: String
+    }, 
+    Split {
+        //The input file name
+        #[arg(short, long, default_value = "input.opus")]
+        input_name: String,
+
+        //The timestamp file name
+        #[arg(short, long, default_value = "timestamps.txt")]
+        timestamps_name: String
+    }
+}
+    
 
 /**
  * Used to hold the parsing method needed
@@ -324,18 +351,13 @@ fn check_input_file_existance() -> bool {
     ret
 }
 
-fn main() {
-    let args: Vec<String> = env::args().collect();
-    //Check if we have the correct number of arguments
-    if args.len() < 3 {
-        eprintln!("Usage: <time stamp file> <input opus file>\n\
-        Please put files in outer directory with Makefile.");
-        panic!();
-    }
+fn download(link: String) {
+    todo!();
+}
 
-    //Collect command line arguments into variables
-    let timestamp_path: String = args[1].to_string();
-    let mut inputmp3_path: String = args[2].to_string();
+fn split(input_file: String, timestamps_file: String) {
+    let timestamp_path: String = timestamps_file;
+    let mut inputmp3_path: String = input_file;
     let input_flag: bool = check_input_file_existance();
 
     //Replace input opus with default name
@@ -363,4 +385,22 @@ fn main() {
     //Run commands for splitting into multiple files
     //ffmpeg -i BIG_FILE -acodec libmp3lame -ss START_TIME -to END_TIME LITTLE_FILE
     //ffmpeg -i input.opus -acodec libmp3lame -ss hh:mm:ss -to hh:mm:ss newname
+
+}
+
+
+fn main() {
+    let args = Args::parse();
+
+    match args.action {
+        Action::Split { input_name, timestamps_name } => {
+            println!("Here for split: {} {}", input_name, timestamps_name);
+            split(input_name, timestamps_name);
+        }, 
+        Action::Download { link } => {
+            println!("Here for download: {}", link);
+            download(link);
+        }
+    }
+
 }
