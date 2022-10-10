@@ -30,10 +30,20 @@ enum Action {
         timestamps_name: String
     }
 }
-    
+
 
 fn download_command(link: String) {
-    todo!();
+    let res: download::Download = download::download_run(link);
+    let file: String = match res {
+        download::Download::Failed => {
+            panic!();
+        },
+        download::Download::Success { filename } => {
+            filename
+        }
+    };
+    
+    let new_file: String = download::rename_download(file); 
 }
 
 fn split_command(input_file: String, timestamps_file: String) {
@@ -66,7 +76,6 @@ fn split_command(input_file: String, timestamps_file: String) {
     //Run commands for splitting into multiple files
     //ffmpeg -i BIG_FILE -acodec libmp3lame -ss START_TIME -to END_TIME LITTLE_FILE
     //ffmpeg -i input.opus -acodec libmp3lame -ss hh:mm:ss -to hh:mm:ss newname
-
 }
 
 

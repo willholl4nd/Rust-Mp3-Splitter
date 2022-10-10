@@ -71,7 +71,6 @@ fn print_directory_contents() {
 
 }
 
-
 /**
  * The starting function where the timestamps.txt file is parsed
  *
@@ -83,7 +82,7 @@ fn print_directory_contents() {
  */
 pub fn separate_file_contents(file_path: String) -> FileContents {
     let file_res = File::open(&file_path);
-    
+
     //Handle the opening of the file
     let mut file = match file_res {
         Ok(file_opened) => {
@@ -95,7 +94,7 @@ pub fn separate_file_contents(file_path: String) -> FileContents {
             panic!()
         }
     };
-    
+
     //Read all contents of file
     let mut contents = String::new();
     file.read_to_string(&mut contents).unwrap();
@@ -121,7 +120,7 @@ fn find_file_format(file_contents: &String) -> ParseMethod {
     let split_contents: Vec<String> = 
         file_contents.split("\n").filter(|x| x.len() > 0).map(|x| x.to_string()).collect();
     let lower = split_contents[0].to_lowercase();
-    
+
     let has_format_line: bool = lower.contains("start") && 
         lower.contains("end") && lower.contains("name");
 
@@ -275,14 +274,14 @@ fn parse_file(file_contents: String) -> FileContents {
 fn run_ffmpeg_commands(command: String) {
     let output = Command::new("sh").arg("-c").arg(&command).output();
     match output.unwrap().status.code().unwrap() {
-       0 => {
+        0 => {
             println!("Conversion successful: \n\t{}", command);
-       }, 
-       code => {
-           eprintln!("Failed to execute file conversion: Exit code {}", code);
-           eprintln!("Failed command string: {}", command);
-           panic!();
-       }
+        }, 
+        code => {
+            eprintln!("Failed to execute file conversion: Exit code {}", code);
+            eprintln!("Failed command string: {}", command);
+            panic!();
+        }
     }
 }
 
@@ -308,7 +307,7 @@ pub fn validate_files(file: String) -> String {
  */
 pub fn check_input_file_existance() -> bool {
     let mut ret: bool = false;
-    
+
     let filename: String = "./input.opus".to_string(); 
     let paths = fs::read_dir("./").unwrap();
     for path in paths {
