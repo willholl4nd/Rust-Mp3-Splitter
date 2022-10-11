@@ -63,8 +63,7 @@ fn construct_command(input_path: &String, filename: &String,
     return string_command;
 }
 
-#[warn(dead_code)]
-fn print_directory_contents() {
+fn _print_directory_contents() {
     for i in fs::read_dir(".").unwrap() {
         println!("Files in dir: {}", i.unwrap().path().display());
     }
@@ -166,7 +165,7 @@ fn find_file_format(file_contents: &String) -> ParseMethod {
  */
 fn parse_file(file_contents: String) -> FileContents {
     //The format the timestamps file is in
-    let mut format: ParseMethod = find_file_format(&file_contents);
+    let format: ParseMethod = find_file_format(&file_contents);
     let (format_strings, has_format) = match format {
         ParseMethod::NONE => {
             let format_strings: Vec<String> = ["name", "start", "end"].iter().map(|x| x.to_string()).collect();

@@ -1,6 +1,3 @@
-//use std::io::Error;
-//use std::io;
-//use std::path::PathBuf;
 use clap::Parser;
 
 mod split;
@@ -43,7 +40,7 @@ fn download_command(link: String) {
         }
     };
     
-    let new_file: String = download::rename_download(file); 
+    let _new_file: String = download::rename_download(file); 
 }
 
 fn split_command(input_file: String, timestamps_file: String) {
