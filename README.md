@@ -30,12 +30,16 @@
 3. Edit the generated file with names 
 4. Run the *rename* subcommand
 
-## Feature 7:
+## Feature 7 (Done): Add playlist and rename subcommands
 1. Add subcommand *playlist* to main.rs
     - Give argument similar to *download*
 2. Add subcommand *rename* to main.rs
     - Give argument of text rename file
     
+## Feature 8: Add verbose option to each subcommand
+1. Add flag *-v* to each command 
+    - Show progress bar for downloading playlists
+    - Show command output for *playlist* and *download* subcommands
 
 Note: Accessing command line arguments of program go as follows:
 ```bash

@@ -2,6 +2,8 @@ use clap::Parser;
 
 mod split;
 mod download;
+mod rename;
+mod playlist;
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
@@ -80,9 +82,21 @@ fn split_command(input_file: String, timestamps_file: String) {
 
 fn rename_command(rename_file: String) {
 
+
 }
 
 fn playlist_command(link: String) {
+    let res: playlist::Download = playlist::download_run(link);
+    let files: Vec<String> = match res {
+        playlist::Download::Failed => {
+            panic!();
+        },
+        playlist::Download::Success { filenames } => {
+            filenames
+        }
+    };
+    
+    //let _new_file: String = download::rename_download(file); 
 
 }
 
@@ -102,7 +116,7 @@ fn main() {
             
         },
         Action::Playlist { link } => {
-
+            playlist_command(link)
         }
     }
 
