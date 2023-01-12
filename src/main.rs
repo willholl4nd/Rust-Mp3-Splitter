@@ -13,7 +13,7 @@ struct Args {
 #[derive(clap::Subcommand, Debug)]
 enum Action {
     Download {
-        //Youtube link to download
+        //YouTube link to download
         #[arg(short, long)]
         link: String
     }, 
@@ -25,6 +25,15 @@ enum Action {
         //The timestamp file name
         #[arg(short, long, default_value = "timestamps.txt")]
         timestamps_name: String
+    },
+    Playlist {
+        //YouTube link to download
+        #[arg(short, long)]
+        link: String
+    },
+    Rename {
+        #[arg(short, long, default_value = "rename.txt")]
+        rename_file: String
     }
 }
 
@@ -67,14 +76,15 @@ fn split_command(input_file: String, timestamps_file: String) {
 
     //Constructs all commands for the ffmpeg conversions
     split::run_split_commands(split_contents, full_inputmp3_path);
-
-
-    //Command:
-    //Run commands for splitting into multiple files
-    //ffmpeg -i BIG_FILE -acodec libmp3lame -ss START_TIME -to END_TIME LITTLE_FILE
-    //ffmpeg -i input.opus -acodec libmp3lame -ss hh:mm:ss -to hh:mm:ss newname
 }
 
+fn rename_command(rename_file: String) {
+
+}
+
+fn playlist_command(link: String) {
+
+}
 
 fn main() {
     let args = Args::parse();
@@ -87,6 +97,12 @@ fn main() {
         Action::Download { link } => {
             println!("Here for download: {}", link);
             download_command(link);
+        },
+        Action::Rename { rename_file } => {
+            
+        },
+        Action::Playlist { link } => {
+
         }
     }
 
