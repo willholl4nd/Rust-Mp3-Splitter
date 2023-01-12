@@ -21,11 +21,28 @@
 
 ## Feature 5 (Done): Add proper command line parsing via rust lib [clap](https://docs.rs/clap/latest/clap/)
 1. Added subcommands to the `cargo run` command
-    - Subcommand `download` has a link flag
-    - Subcommand `split` has an input and timestamps flag
+    - Subcommand *download* has a link flag
+    - Subcommand *split* has an input and timestamps flag
+
+## Feature 6: Add support for downloading playlists
+1. Pick the YouTube public/unlisted playlist link you'd like to download
+2. Run the *playlist* subcommand with the link or the part of the playlist url that has list={random string of letters and characters}
+3. Edit the generated file with names 
+4. Run the *rename* subcommand
+
+## Feature 7:
+1. Add subcommand *playlist* to main.rs
+    - Give argument similar to *download*
+2. Add subcommand *rename* to main.rs
+    - Give argument of text rename file
+    
 
 Note: Accessing command line arguments of program go as follows:
 ```bash
 cargo run -- (subcommand) (flags)
+```
+Ex:
+```bash 
+cargo run -- download -l xm3YgoEiEDc
 ```
 
