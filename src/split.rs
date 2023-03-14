@@ -1,6 +1,8 @@
 use std::fs::{self, File};
 use std::io::prelude::*;
 use std::process::Command;
+use rayon::prelude::*;
+use rayon::{ThreadPoolBuilder};
 
 /**
  * Used to hold the parsing method needed
@@ -29,19 +31,28 @@ pub struct FileContents {
  * f - the parsed contents of the timestamps file
  * input_path - the path to the input opus file 
  */
-pub fn run_split_commands(f: FileContents, input_path: String) {
+pub fn run_split_commands(f: FileContents, input_path: String, thread_count: usize) {
     let start_index: usize = f.format.iter().position(|x| x == "start").unwrap();
     let end_index: usize = f.format.iter().position(|x| x == "end").unwrap();
     let name_index: usize = f.format.iter().position(|x| x == "name").unwrap();
 
-    for point in f.data {
-        let start_time = &point[start_index];
-        let end_time = &point[end_index];
-        let name = &point[name_index];
+    let pool = ThreadPoolBuilder::new().num_threads(thread_count).build().unwrap();
 
-        let command: String = construct_command(&input_path, name, start_time, end_time);
-        run_ffmpeg_commands(command);
-    }
+    // Note pool.install is a blocking function
+    pool.install(|| {
+        // Gather data to a vector
+        let data = f.data.to_vec();
+
+        // Iterate to spawn jobs on thread pool
+        data.par_iter().for_each(move |point| {
+            let start_time = &point[start_index];
+            let end_time = &point[end_index];
+            let name = &point[name_index];
+
+            let command: String = construct_command(&input_path, name, start_time, end_time);
+            rayon::spawn(move || run_ffmpeg_commands(command));
+        });
+    });
 }
 
 /**

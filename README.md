@@ -41,6 +41,11 @@
     - Show progress bar for downloading playlists
     - Show command output for *playlist* and *download* subcommands
 
+## Feature 9 (Done): Add multithreading for ffmpeg command
+1. Create argument for *split* subcommand 
+    - Argument will take a number and will default to 5
+2. Multithreading will run in batches of the argument number specified
+
 Note: Accessing command line arguments of program go as follows:
 ```bash
 cargo run -- (subcommand) (flags)

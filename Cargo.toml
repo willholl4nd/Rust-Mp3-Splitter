@@ -7,3 +7,5 @@ edition = "2021"
 
 [dependencies]
 clap = { version = "4.0.12", features = ["derive"] }
+rayon = "1.7.0"
+filedescriptor = "0.8.2"

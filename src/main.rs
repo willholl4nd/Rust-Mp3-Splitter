@@ -26,7 +26,11 @@ enum Action {
 
         //The timestamp file name
         #[arg(short, long, default_value = "timestamps.txt")]
-        timestamps_name: String
+        timestamps_name: String,
+            
+        //The thread count for multithreading
+        #[arg(short = 'x', long, default_value_t = 5)]
+        thread_count: usize
     },
     Playlist {
         //YouTube link to download
@@ -54,7 +58,7 @@ fn download_command(link: String) {
     let _new_file: String = download::rename_download(file); 
 }
 
-fn split_command(input_file: String, timestamps_file: String) {
+fn split_command(input_file: String, timestamps_file: String, thread_count: usize) {
     let timestamp_path: String = timestamps_file;
     let mut inputmp3_path: String = input_file;
     let input_flag: bool = split::check_input_file_existance();
@@ -77,7 +81,7 @@ fn split_command(input_file: String, timestamps_file: String) {
     println!("Length of new_split_contents = {}", split_contents.data.len());
 
     //Constructs all commands for the ffmpeg conversions
-    split::run_split_commands(split_contents, full_inputmp3_path);
+    split::run_split_commands(split_contents, full_inputmp3_path, thread_count);
 }
 
 fn rename_command(rename_file: String) {
@@ -104,9 +108,9 @@ fn main() {
     let args = Args::parse();
 
     match args.action {
-        Action::Split { input_name, timestamps_name } => {
+        Action::Split { input_name, timestamps_name, thread_count } => {
             println!("Here for split: {} {}", input_name, timestamps_name);
-            split_command(input_name, timestamps_name);
+            split_command(input_name, timestamps_name, thread_count);
         }, 
         Action::Download { link } => {
             println!("Here for download: {}", link);
