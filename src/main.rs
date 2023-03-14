@@ -1,4 +1,5 @@
 use clap::Parser;
+use num_cpus;
 
 mod split;
 mod download;
@@ -29,7 +30,7 @@ enum Action {
         timestamps_name: String,
             
         //The thread count for multithreading
-        #[arg(short = 'x', long, default_value_t = 5)]
+        #[arg(short = 'x', long, default_value_t = get_cpu_default() )]
         thread_count: usize
     },
     Playlist {
@@ -43,6 +44,15 @@ enum Action {
     }
 }
 
+fn get_cpu_default() -> usize {
+    let num = num_cpus::get();
+    let rem = num % 4;
+    if rem != 0 {
+        (num - rem) / 4 + 1            
+    } else {
+        num / 4
+    }
+}
 
 fn download_command(link: String) {
     let res: download::Download = download::download_run(link);
@@ -109,7 +119,7 @@ fn main() {
 
     match args.action {
         Action::Split { input_name, timestamps_name, thread_count } => {
-            println!("Here for split: {} {}", input_name, timestamps_name);
+            println!("Splitting {} with timestamps {} using {} threads", input_name, timestamps_name, thread_count); 
             split_command(input_name, timestamps_name, thread_count);
         }, 
         Action::Download { link } => {
