@@ -1,8 +1,12 @@
 use std::fs::{self, File};
-use std::io::prelude::*;
+use std::io::{prelude::*, stdout};
 use std::process::Command;
 use rayon::prelude::*;
 use rayon::{ThreadPoolBuilder};
+use indicatif::ProgressBar;
+use std::sync::mpsc::{sync_channel, SyncSender, Receiver};
+//use crossbeam_channel::{unbounded};
+use std::thread;
 
 /**
  * Used to hold the parsing method needed
@@ -36,21 +40,34 @@ pub fn run_split_commands(f: FileContents, input_path: String, thread_count: usi
     let end_index: usize = f.format.iter().position(|x| x == "end").unwrap();
     let name_index: usize = f.format.iter().position(|x| x == "name").unwrap();
 
+    let size: u64 = f.data.len() as u64;
     let pool = ThreadPoolBuilder::new().num_threads(thread_count).build().unwrap();
+    let bar = ProgressBar::new(size);
 
     // Note pool.install is a blocking function
     pool.install(|| {
         // Gather data to a vector
         let data = f.data.to_vec();
+        let (sender, receiver): (SyncSender<bool>, Receiver<bool>) = sync_channel(size as usize);
+
+        // Thread for incrementing progress bar
+        thread::spawn(move || {
+            for _ in 1..size {
+                if receiver.recv().unwrap() {
+                    bar.inc(1);
+                }
+            }
+        });
 
         // Iterate to spawn jobs on thread pool
-        data.par_iter().for_each(move |point| {
+        data.par_iter().for_each(|point| {
             let start_time = &point[start_index];
             let end_time = &point[end_index];
             let name = &point[name_index];
+            let sender_clone = sender.clone();
 
             let command: String = construct_command(&input_path, name, start_time, end_time);
-            rayon::spawn(move || run_ffmpeg_commands(command));
+            rayon::spawn(move || run_ffmpeg_commands(command, sender_clone));
         });
     });
 }
@@ -281,11 +298,12 @@ fn parse_file(file_contents: String) -> FileContents {
  *
  * Panics if the command fails
  */
-fn run_ffmpeg_commands(command: String) {
+fn run_ffmpeg_commands(command: String, sender: SyncSender<bool>) {
     let output = Command::new("sh").arg("-c").arg(&command).output();
     match output.unwrap().status.code().unwrap() {
         0 => {
-            println!("Conversion successful: \n\t{}", command);
+            //println!("Conversion successful: \n\t{}", command);
+            sender.send(true);
         }, 
         code => {
             eprintln!("Failed to execute file conversion: Exit code {}", code);

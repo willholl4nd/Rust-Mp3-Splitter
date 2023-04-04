@@ -10,3 +10,5 @@ clap = { version = "4.0.12", features = ["derive"] }
 rayon = "1.7.0"
 filedescriptor = "0.8.2"
 num_cpus = "1.15.0"
+indicatif = "0.17.3"
+crossbeam-channel = "0.5.7"
